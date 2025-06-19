@@ -6,11 +6,11 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
 from api.pagination import UserPagination
-from api.serializers import CustomUserSerializer, AvatarSerializer, SubscriptionUserSerializer
-from users.models import CustomUser, Subscription
+from api.serializers import UserSerializer, AvatarSerializer, SubscriptionUserSerializer
+from users.models import User, Subscription
 
 
-class CustomUserViewSet(DjoserUserViewSet):
+class UserViewSet(DjoserUserViewSet):
     pagination_class = UserPagination
 
     def get_permissions(self):
@@ -66,7 +66,7 @@ class CustomUserViewSet(DjoserUserViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        followed_users = CustomUser.objects.filter(
+        followed_users = User.objects.filter(
             followers__user=user
         )
         paginator = self.pagination_class()
@@ -84,7 +84,7 @@ class CustomUserViewSet(DjoserUserViewSet):
     )
     def subscribe(self, request, id=None):
         user = request.user
-        following = get_object_or_404(CustomUser, id=id)
+        following = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
             if Subscription.objects.filter(

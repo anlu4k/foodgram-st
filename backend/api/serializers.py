@@ -4,18 +4,18 @@ from django.contrib.auth import get_user_model
 from drf_extra_fields.fields import Base64ImageField
 from djoser.serializers import UserSerializer
 
-from users.models import Subscription, CustomUser
+from users.models import Subscription, User
 
 User = get_user_model()
 
-class CustomUserSerializer(UserSerializer):
+class UserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
     avatar = serializers.SerializerMethodField()
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
 
     class Meta(UserSerializer.Meta):
-        model = CustomUser
+        model = User
         fields = ('id', 'email', 'username', 'first_name',
                  'last_name', 'avatar', 'is_subscribed')
 
@@ -34,7 +34,7 @@ class AvatarSerializer(serializers.ModelSerializer):
     avatar = Base64ImageField(required=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('avatar',)
 
     def update(self, instance, validated_data):
@@ -44,3 +44,24 @@ class AvatarSerializer(serializers.ModelSerializer):
         instance.avatar = avatar
         instance.save()
         return instance
+
+class SubscriptionUserSerializer(UserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count')
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        try:
+            limit = int(request.query_params.get('recipes_limit'))
+        except (ValueError, TypeError):
+            limit = None
+        recipes = obj.recipes.all()
+        if limit:
+            recipes = recipes[:limit]
+        return ShortRecipeSerializer(recipes, many=True, context=self.context).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
