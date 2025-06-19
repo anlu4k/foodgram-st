@@ -3,3 +3,4 @@ Django==4.2.23
 sqlparse==0.5.3
 typing_extensions==4.14.0
 tzdata==2025.2
+djoser==2.3.1

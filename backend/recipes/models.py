@@ -113,3 +113,5 @@ class IngredientInRecipe(models.Model):
         return (
             f'{self.ingredient.name} ({self.ingredient.measurement_unit}) - {self.amount} '
         )
+    
+
