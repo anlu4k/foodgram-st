@@ -87,25 +87,29 @@ class UserViewSet(DjoserUserViewSet):
         following = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            if Subscription.objects.filter(
-                user=user, following=following
-            ).exists():
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
+            if Subscription.objects.filter(user=user, following=following).exists():
+                return Response(
+                    {"error": "Вы уже подписаны на этого пользователя"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             if user == following:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
-            subscription = Subscription.objects.create(
-                user=user, following=following)
-
+                return Response(
+                    {"error": "Нельзя подписаться на самого себя"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            Subscription.objects.create(user=user, following=following)
             serializer = SubscriptionUserSerializer(
-                subscription.following, context={'request': request}
+                following, context={'request': request}
             )
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        subscription = Subscription.objects.filter(
-            user=user, following=following)
-        if subscription:
+        subscription = Subscription.objects.filter(user=user, following=following)
+        if subscription.exists():
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Вы не подписаны на этого пользователя"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    
