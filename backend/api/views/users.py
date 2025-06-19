@@ -6,11 +6,11 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
 from api.pagination import UserPagination
-from api.serializers import UserSerializer, AvatarSerializer, SubscriptionUserSerializer
-from users.models import User, Subscription
+from api.serializers import CustomUserSerializer, AvatarSerializer, SubscriptionUserSerializer
+from users.models import CustomUser, Subscription
 
 
-class UserViewSet(DjoserUserViewSet):
+class CustomUserViewSet(DjoserUserViewSet):
     pagination_class = UserPagination
 
     def get_permissions(self):
@@ -66,7 +66,7 @@ class UserViewSet(DjoserUserViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        followed_users = User.objects.filter(
+        followed_users = CustomUser.objects.filter(
             followers__user=user
         )
         paginator = self.pagination_class()
@@ -84,32 +84,28 @@ class UserViewSet(DjoserUserViewSet):
     )
     def subscribe(self, request, id=None):
         user = request.user
-        following = get_object_or_404(User, id=id)
+        following = get_object_or_404(CustomUser, id=id)
 
         if request.method == 'POST':
-            if Subscription.objects.filter(user=user, following=following).exists():
-                return Response(
-                    {"error": "Вы уже подписаны на этого пользователя"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if user == following:
-                return Response(
-                    {"error": "Нельзя подписаться на самого себя"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            Subscription.objects.create(user=user, following=following)
-            serializer = SubscriptionUserSerializer(
-                following, context={'request': request}
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if Subscription.objects.filter(
+                user=user, following=following
+            ).exists():
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        subscription = Subscription.objects.filter(user=user, following=following)
-        if subscription.exists():
+            if user == following:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+            subscription = Subscription.objects.create(
+                user=user, following=following)
+
+            serializer = SubscriptionUserSerializer(
+                subscription.following, context={'request': request}
+            )
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+        subscription = Subscription.objects.filter(
+            user=user, following=following)
+        if subscription:
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {"error": "Вы не подписаны на этого пользователя"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    
+        return Response(status=status.HTTP_400_BAD_REQUEST)

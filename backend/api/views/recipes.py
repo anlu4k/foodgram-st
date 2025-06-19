@@ -129,33 +129,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(content, content_type="text/plain")
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
-    
-    @action(methods=["get"], detail=True, url_path="get-link")
-    def get_short_link(self, request, pk=None):
-        recipe = get_object_or_404(Recipe, id=pk)
-        default_link = request.build_absolute_uri(f"/api/recipes/{pk}/")
-        short_link = shorten_url(url=default_link, is_permanent=False)
-        return Response(data={"short-link": short_link})
-
-    @action(
-        methods=["get"],
-        detail=False,
-        url_path="download_shopping_cart",
-        permission_classes=(permissions.IsAuthenticated,),
-    )
-    def download_shopping_cart(self, request):
-        recipes = Recipe.objects.filter(in_cart__user=request.user)
-        ingredients = (
-            IngredientInRecipe.objects.filter(recipe__in=recipes)
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(total_amount=Sum("amount"))
-            .order_by("ingredient__name")
-        )
-        shopping_list = [
-            f"{ing['ingredient__name']} ({ing['ingredient__measurement_unit']}) - {ing['total_amount']}"
-            for ing in ingredients
-        ]
-        content = "\n".join(shopping_list)
-        response = HttpResponse(content, content_type="text/plain")
-        response["Content-Disposition"] = 'attachment; filename="shopping_list.txt"'
-        return response

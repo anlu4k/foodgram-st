@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
-from users.models import User
+from users.models import CustomUser
 
 class Ingredient(models.Model):
     name = models.CharField(
@@ -20,7 +20,7 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="recipes"
+        CustomUser, on_delete=models.CASCADE, related_name="recipes"
     )
     name = models.CharField("Название", max_length=256)
     image = models.ImageField("Фото", upload_to="recipes/")
@@ -50,7 +50,7 @@ class IngredientInRecipe(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorites"
     )
@@ -66,7 +66,7 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="in_cart")
 
     class Meta:

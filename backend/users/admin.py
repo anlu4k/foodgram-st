@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Subscription
+from .models import CustomUser, Subscription
 
 
-@admin.register(User)
-class UserAdmin(UserAdmin):
-    model = User
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
     fieldsets = UserAdmin.fieldsets + (
         ('Дополнительно', {'fields': ('avatar',)}),
     )

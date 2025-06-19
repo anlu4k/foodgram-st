@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     avatar = models.ImageField(
         upload_to='users/avatars/',
         default=None,
@@ -33,9 +33,9 @@ class User(AbstractUser):
 
 class Subscription(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscriptions')
+        CustomUser, on_delete=models.CASCADE, related_name='subscriptions')
     following = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='followers')
+        CustomUser, on_delete=models.CASCADE, related_name='followers')
 
     class Meta:
         verbose_name = 'Подписка'
