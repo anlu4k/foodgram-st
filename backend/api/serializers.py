@@ -161,7 +161,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             for ingredient_data in ingredient_data
         ])
 
-    # Ошибка, если поле image есть, но у него пустое значение
     def validate_image(self, value):
         if not value:
             raise serializers.ValidationError('У рецепта должна быть картинка')
@@ -190,7 +189,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                     {'ingredients': 'Количество ингредиента должно быть больше нуля'}
                 )
             
-        # Проверка только в случае создания рецепта (не нарушает редактирование)
         if self.instance is None:
             image_in_data = 'image' in self.initial_data
             image_value = self.initial_data.get('image')

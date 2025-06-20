@@ -1,4 +1,4 @@
-version: '3.3'  # Можно удалить (устарело), но оставлено для совместимости
+version: '3.3'
 
 volumes:
   pg_data:
@@ -17,7 +17,7 @@ services:
   backend:
     container_name: foodgram_back
     build: ../backend
-    ports:  # Добавлено для доступа к Django
+    ports: 
       - "8000:8000"
     volumes:
       - static_value:/app/static/

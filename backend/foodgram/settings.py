@@ -20,6 +20,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,backend').split(
 # Application definition
 
 INSTALLED_APPS = [
+    'urlshortner',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,7 +33,6 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'recipes',
-    'urlshortner',
 ]
 
 MIDDLEWARE = [

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from urlshortner.models import *
 
 from .models import (Favorite, Ingredient, IngredientInRecipe,
                      Recipe, ShoppingCart)
@@ -34,3 +35,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'recipe')
+
+for model in admin.site._registry.copy():
+        if model.__module__.startswith('urlshortner'):
+            admin.site.unregister(model)
