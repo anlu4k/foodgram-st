@@ -1,13 +1,21 @@
-Foodgram
-Foodgram, «Продуктовый помощник». Онлайн-сервис и API для публикации и обмена рецептами. Пользователи могут подписываться на авторов, добавлять рецепты в «Избранное» и скачивать сводный список продуктов для выбранных блюд.
+# Foodgram — Продуктовый помощник
 
-Локальный запуск с Docker
-1. Клонирование репозитория
-git clone https://github.com/SaveliyKrivov/foodgram-st.git
+**Foodgram** — это веб-приложение для публикации рецептов, добавления их в избранное и список покупок, а также подписки на авторов.
+
+## Локальный запуск с Docker
+
+### 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/anlu4k/foodgram-st.git
 cd foodgram-st
-2. Создание и настройка .env файла
-В корне проекта создайте файл .env со следующим содержимым:
+```
 
+### 2. Создание и настройка `.env` файла
+
+В корне проекта создайте файл `.env` со следующим содержимым:
+
+```env
 POSTGRES_DB=foodgram
 POSTGRES_USER=foodgram_user
 POSTGRES_PASSWORD=foodgram_password
@@ -16,23 +24,31 @@ DB_PORT=5432
 SECRET_KEY=your_django_secret_key
 DEBUG=False
 ALLOWED_HOSTS=127.0.0.1,localhost
-3. Сборка и запуск контейнеров
-Перейдите в директорию infra/ и выполните:
+```
 
+### 3. Сборка и запуск контейнеров
+
+Перейдите в директорию `infra/` и выполните:
+
+```bash
 docker-compose up -d --build
-4. Применение миграций и сбор статики
+```
+
+### 4. Применение миграций и сбор статики
+
+```bash
 docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py collectstatic --noinput
-5. Создание суперпользователя
+```
+
+### 5. Создание суперпользователя
+
+```bash
 docker-compose exec backend python manage.py createsuperuser
-6. Загрузка данных
-Загрузите ингредиенты, пользователей и рецепты:
+```
 
-docker-compose exec backend python manage.py load_ingredients
-docker-compose exec backend python manage.py load_users
-docker-compose exec backend python manage.py load_recipes
+### 6. Доступ к приложению
 
-7. Доступ к приложению
-Frontend: http://localhost/
-Админка: http://localhost/admin/
-API: http://localhost/api/
+* Frontend: [http://localhost/](http://localhost/)
+* Админка: [http://localhost/admin/](http://localhost/admin/)
+* API: [http://localhost/api/](http://localhost/api/)
