@@ -41,12 +41,36 @@ class Recipe(models.Model):
 
 class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name="ingredient_amounts"
+        Recipe, on_delete=models.CASCADE, 
+        related_name="ingredient_amounts",
+        verbose_name="Рецепт"
     )
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE,
+        verbose_name="Ингредиент"
+    )
     amount = models.PositiveSmallIntegerField(
-        "Колчиество", validators=[MinValueValidator(1)]
+        "Количество",
+        validators=[MinValueValidator(1)]
     )
+
+    class Meta:
+        verbose_name = "Ингредиент в рецепте"
+        verbose_name_plural = "Ингредиенты в рецептах"
+        ordering = ["recipe"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["recipe", "ingredient"],
+                name="unique_recipe_ingredient"
+            )
+        ]
+        indexes = [
+            models.Index(fields=["recipe"], name="recipe_idx"),
+            models.Index(fields=["ingredient"], name="ingredient_idx"),
+        ]
+
+    def __str__(self):
+        return f"{self.ingredient.name} - {self.amount} ({self.recipe.name})"
 
 
 class Favorite(models.Model):

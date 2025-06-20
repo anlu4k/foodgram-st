@@ -6,12 +6,17 @@ class CustomUser(AbstractUser):
     avatar = models.ImageField(
         upload_to='users/avatars/',
         default=None,
-        null=True
+        null=True,
+        verbose_name='Аватар'
     )
-    email = models.EmailField(unique=True)
+    email = models.EmailField(
+        unique=True,
+        verbose_name='Электронная почта'
+    )
     username = models.CharField(
         max_length=150,
         unique=True,
+        verbose_name='Имя пользователя',
         validators=[
             RegexValidator(
                 regex=(r"^[\w.@+-]+$"),
@@ -23,9 +28,26 @@ class CustomUser(AbstractUser):
             )
         ],
     )
+    first_name = models.CharField(
+        max_length=150,
+        verbose_name='Имя'
+    )
+    last_name = models.CharField(
+        max_length=150,
+        verbose_name='Фамилия'
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ('username',)
+        indexes = [
+            models.Index(fields=['username'], name='username_idx'),
+            models.Index(fields=['email'], name='email_idx'),
+        ]
 
     def __str__(self):
         return self.username
